@@ -18,8 +18,8 @@
  
 // DNS
 zone "fatecseg.edu.br" IN {
-type master;
-file "/etc/bind/domains/fatecseg/db.fatecseg.edu.br";
+	type master;
+	file "/etc/bind/domains/fatecseg/db.fatecseg.edu.br";
 };
 
 // DNS Reverso
