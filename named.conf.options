@@ -25,9 +25,9 @@ options {
     //========================================================================
     dnssec-validation auto;
     minimal-responses yes;
-    version "Empresa FatecSeg"
+    version "Empresa FatecSeg";
     allow-query-cache { rede_interna; };
     allow-query { any; };
-    allow-recursion { rede_ interna; };
+    allow-recursion { rede_interna; };
     listen-on-v6 { any; };
 };
