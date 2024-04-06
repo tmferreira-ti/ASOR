@@ -20,12 +20,16 @@
 zone "fatecseg.edu.br" IN {
 	type master;
 	file "/etc/bind/domains/fatecseg/db.fatecseg.edu.br";
+//	allow-transfer { 192.168.200.3; };
+//	also-notify { 192.168.200.3; };
 };
 
 // DNS Reverso
-zone "200.168.192.in-addr.arpa" {
-	type master;
-	file "/etc/bind/domains/fatecseg/db.200.168.192";
-};
+//zone "200.168.192.in-addr.arpa" {
+//	type master;
+//	file "/etc/bind/domains/fatecseg/db.200.168.192";
+//	allow-transfer { 192.168.200.3; };
+//	also-notify { 192.168.200.3; };
+//};
 
 
