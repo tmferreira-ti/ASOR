@@ -7,29 +7,17 @@
 //include "/etc/bind/zones.rfc1918";
 
 
-//
-// Do any local configuration here
-//
- 
-// Consider adding the 1918 zones here, if they are not used in your
-// organization
-//include "/etc/bind/zones.rfc1918";
- 
- 
 // DNS
 zone "fatecseg.edu.br" IN {
-	type master;
-	file "/etc/bind/domains/fatecseg/db.fatecseg.edu.br";
-	allow-transfer { 192.168.200.3; };
-	also-notify { 192.168.200.3; };
+	type slave;
+	file "/var/lib/bind/db.fatecseg.edu.br";
+	masters { 192.168.200.2; };
 };
+
 
 // DNS Reverso
 zone "200.168.192.in-addr.arpa" {
-	type master;
-	file "/etc/bind/domains/fatecseg/db.200.168.192";
-	allow-transfer { 192.168.200.3; };
-	also-notify { 192.168.200.3; };
+        type slave;
+        file "/var/lib/bind/db.200.168.192";
+        masters { 192.168.200.2; };
 };
-
-
