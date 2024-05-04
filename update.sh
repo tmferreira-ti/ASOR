@@ -10,10 +10,14 @@ configurar_router() {
     wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/dhcp/dhcpd.conf -O /etc/dhcp/dhcpd.conf
     wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/dhcp/isc-dhcp-server -O /etc/default/isc-dhcp-server
     wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/interfaces/interfaces -O /etc/network/interfaces
-    echo "nameserver 192.168.200.2"
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/nftables.conf -O /etc/nftables.conf
+    echo "nameserver 192.168.200.2" > /etc/resolv.conf
+    echo "nameserver 192.168.200.3" >> /etc/resolv.conf
     chattr +i /etc/resolv.conf
     systemctl restart networking.service
     systemctl restart isc-dhcp-server.service
+    systemctl enable nftables
+    systemctl restart nftables
     
 }
 
