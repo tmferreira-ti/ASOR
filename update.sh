@@ -35,7 +35,10 @@ configurar_ns1() {
     echo "nameserver 8.8.8.8" > /etc/resolv.conf
     apt install bind9
     wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/DNS/Master/named.conf.options -O /etc/bind/named.conf.options
-    wget https://github.com/tmferreira-ti/ASOR/blob/main/NS1/dns/bind/named.conf.local -O /etc/bind/named.conf.local
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/DNS/Master/named.conf.local -O /etc/bind/named.conf.local
+    mkdir -p /etc/bind/domains/fatecseg/
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/DNS/Master/db.fatecseg.edu.br -O /etc/bind/domains/fatecseg/db.fatecseg.edu.br
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/DNS/Master/db.200.168.192 -O /etc/bind/domains/fatecseg/db.200.168.192
     echo "nameserver 192.168.200.2" > /etc/resolv.conf
     echo "nameserver 192.168.200.3" >> /etc/resolv.conf
     chattr +i /etc/resolv.conf
