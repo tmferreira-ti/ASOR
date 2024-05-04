@@ -31,6 +31,16 @@ configurar_ad() {
 configurar_ns1() {
     echo "Configurando o servidor de nomes 1 (NS1)..."
     # Adicione aqui os comandos para configurar o NS1
+    chattr -i /etc/resolv.conf
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    apt install bind9
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/DNS/Master/named.conf.options -O /etc/bind/named.conf.options
+    wget https://github.com/tmferreira-ti/ASOR/blob/main/NS1/dns/bind/named.conf.local -O /etc/bind/named.conf.local
+    echo "nameserver 192.168.200.2" > /etc/resolv.conf
+    echo "nameserver 192.168.200.3" >> /etc/resolv.conf
+    chattr +i /etc/resolv.conf
+    systemctl restart bind9
+    
 }
 
 # Função para a configuração do servidor de nomes 2 (NS2)
