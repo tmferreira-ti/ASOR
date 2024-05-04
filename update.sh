@@ -4,6 +4,10 @@
 configurar_router() {
     echo "Configurando o roteador..."
     # Adicione aqui os comandos para configurar o roteador
+    apt install isc-dhcp-server -y
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/dhcp/dhcpd.conf -O /etc/dhcp/dhcpd.conf
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/dhcp/isc-dhcp-server -O /etc/default/isc-dhcp-server
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/interfaces/interfaces -O /etc/network/interfaces
 }
 
 # Função para a configuração do Active Directory (AD)
