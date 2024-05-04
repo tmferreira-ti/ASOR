@@ -1,38 +1,57 @@
 #!/bin/bash
-clear
-echo "
-1 - ASOR-ROUTER
-2 - ASOR-AD
-3 - ASOR-WEB
-4 - ASOR-NS1
-5 - ASOR-NS2
-"
-read -p "Informe em qual máquina esse script será executado: " opcao
 
-case $opcao in 
-	1)
-		echo router
-	;;
+# Função para a configuração do roteador
+configurar_router() {
+    echo "Configurando o roteador..."
+    # Adicione aqui os comandos para configurar o roteador
+}
 
-	2)
-		echo AD
-	;;
+# Função para a configuração do Active Directory (AD)
+configurar_ad() {
+    echo "Configurando o Active Directory (AD)..."
+    # Adicione aqui os comandos para configurar o AD
+}
 
-	3)
-		echo WEB
-	;;
+# Função para a configuração do servidor de nomes 1 (NS1)
+configurar_ns1() {
+    echo "Configurando o servidor de nomes 1 (NS1)..."
+    # Adicione aqui os comandos para configurar o NS1
+}
 
-	4)
-		echo NS1
-	;;
+# Função para a configuração do servidor de nomes 2 (NS2)
+configurar_ns2() {
+    echo "Configurando o servidor de nomes 2 (NS2)..."
+    # Adicione aqui os comandos para configurar o NS2
+}
 
-	5)
-		echo NS2
-	;;
+# Função para a configuração do servidor web
+configurar_web() {
+    echo "Configurando o servidor web..."
+    # Adicione aqui os comandos para configurar o servidor web
+}
 
-	*)
-		echo "Opção inválida, digite uma opção válida."
-	;;
+# Verifica o primeiro parâmetro e chama a função correspondente
+case "$1" in
+    router)
+        configurar_router
+        ;;
+    ad)
+        configurar_ad
+        ;;
+    ns1)
+        configurar_ns1
+        ;;
+    ns2)
+        configurar_ns2
+        ;;
+    web)
+        configurar_web
+        ;;
+    *)
+        echo "Uso: $0 {router|ad|ns1|ns2|web}"
+        exit 1
+        ;;
 esac
 
+exit 0
 
