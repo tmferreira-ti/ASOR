@@ -4,6 +4,17 @@
 configurar_router() {
     echo "Configurando o roteador..."
     # Adicione aqui os comandos para configurar o roteador
+    chattr -i /etc/resolv.conf
+    echo "nameserver 8.8.8.8" > /etc/resolv.conf
+    apt install isc-dhcp-server -y
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/dhcp/dhcpd.conf -O /etc/dhcp/dhcpd.conf
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/dhcp/isc-dhcp-server -O /etc/default/isc-dhcp-server
+    wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Router/interfaces/interfaces -O /etc/network/interfaces
+    echo "nameserver 192.168.200.2"
+    chattr +i /etc/resolv.conf
+    systemctl restart networking.service
+    systemctl restart isc-dhcp-server.service
+    
 }
 
 # Função para a configuração do Active Directory (AD)
