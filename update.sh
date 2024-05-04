@@ -33,7 +33,7 @@ configurar_ns1() {
     # Adicione aqui os comandos para configurar o NS1
     chattr -i /etc/resolv.conf
     echo "nameserver 8.8.8.8" > /etc/resolv.conf
-    apt install bind9
+    apt install bind9 -y
     wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/DNS/Master/named.conf.options -O /etc/bind/named.conf.options
     wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/DNS/Master/named.conf.local -O /etc/bind/named.conf.local
     mkdir -p /etc/bind/domains/fatecseg/
