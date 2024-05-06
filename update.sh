@@ -18,7 +18,8 @@ configurar_router() {
     systemctl restart isc-dhcp-server.service
     systemctl enable nftables
     systemctl restart nftables
-    
+    sed -i '28s/^#//' /etc/sysctl.conf
+    sysctl -p
 }
 
 # Função para a configuração do Active Directory (AD)
