@@ -1,0 +1,17 @@
+$TTL 3600 ; Tempo de vida das respostas fornecidas pelo DNS (cache)
+@ IN SOA ns1.fatecseg.edu.br. hostmaster.fatecseg.edu.br. (
+    2024020901 ; Serial para controle de atualizações entre master e slave
+    28800      ; Tempo de atualizações entre master e slave (refresh)
+    7200       ; Tempo de atualizações caso o refresh falhe
+    604800     ; Tempo de expiração do slave caso não contate o master
+    7200 )     ; Tempo de vida das respostas negativas do servidor
+
+NS ns1.fatecseg.edu.br.
+
+1   PTR ns1.fatecseg.edu.br.
+2   PTR ns2.fatecseg.edu.br.
+2   PTR www.fatecseg.edu.br.
+3   PTR smtp.fatecseg.edu.br.
+4   PTR smtp2.fatecseg.edu.br.
+5   PTR pop3.fatecseg.edu.br.
+6   PTR blog.fatecseg.edu.br.

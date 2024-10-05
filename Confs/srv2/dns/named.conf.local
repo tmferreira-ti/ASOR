@@ -1,0 +1,13 @@
+// DNS
+zone "fatecseg.edu.br" IN {
+    type slave;
+    file "/var/lib/bind/db.fatecseg.edu.br";
+    masters { 172.17.0.1; };
+};
+
+// DNS Reverso
+zone "0.17.172.in-addr.arpa" {
+    type slave;
+    file "/var/lib/bind/db.0.17.172";
+    masters { 172.17.0.1; };
+};

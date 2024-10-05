@@ -1,0 +1,34 @@
+acl "rede_interna" {
+    172.17.0.0/24;  // Definição de uma ACL (Access Control List) chamada "rede_interna", permitindo o intervalo de IPs 172.17.0.0/24.
+};
+
+options {
+    directory "/var/cache/bind";  // Diretório onde o BIND armazena arquivos de cache.
+
+    // If there is a firewall between you and nameservers you want
+    // to talk to, you may need to fix the firewall to allow multiple
+    // ports to talk.  See http://www.kb.cert.org/vuls/id/800113
+
+    // If your ISP provided one or more IP addresses for stable
+    // nameservers, you probably want to use them as forwarders.
+    // Uncomment the following block, and insert the addresses replacing
+    // the all-0's placeholder.
+
+    forwarders {  // Configuração de servidores de encaminhamento para resolver consultas DNS.
+        8.8.8.8;  // Google Public DNS (primário).
+        8.8.4.4;  // Google Public DNS (secundário).
+    };
+
+    //========================================================================
+    // If BIND logs error messages about the root key being expired,
+    // you will need to update your keys.  See https://www.isc.org/bind-keys
+    //========================================================================
+
+    dnssec-validation no;  // Desativa a validação DNSSEC.
+    minimal-responses yes;  // Respostas mínimas, enviando apenas os dados necessários na resposta DNS.
+    version "Empresa FatecSeg";  // Define uma string personalizada para a versão do BIND que será exibida.
+    allow-query-cache { rede_interna; };  // Permite cache de consultas para a ACL "rede_interna".
+    allow-query { any; };  // Permite consultas DNS de qualquer origem.
+    allow-recursion { rede_interna; };  // Permite recursão DNS apenas para a ACL "rede_interna".
+    listen-on-v6 { any; };  // Escuta requisições em qualquer interface IPv6.
+};
