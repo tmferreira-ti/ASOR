@@ -11,8 +11,17 @@
 #systemctl enable nftables
 #reboot
 
+apt install bind9
+
+wget github.com/tmferreira-ti/ASOR/raw/refs/heads/main/Confs/srv1/dns/named.conf.options -O /etc/bind/named.conf.options
+
 wget bit.ly/asor-named-local -O /etc/bind/named.conf.local --no-check-certificate --no-cache
 
 mkdir -p /etc/bind/domains/fatecseg/
 
 wget bit.ly/asorfatecseg -O /etc/bind/domains/fatecseg/db.fatecseg.edu.br --no-check-certificate --no-cache
+
+echo "domain fatecseg.edu.br" > /etc/resolv.conf
+echo "search fatecseg.edu.br"  >> /etc/resolv.conf
+echo "nameserver 172.17.0.1" >> /etc/resolv.conf
+echo "nameserver 172.17.0.2" >> /etc/resolv.conf
