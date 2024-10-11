@@ -11,7 +11,7 @@
 #systemctl enable nftables
 #reboot
 
-apt install bind9
+apt install bind9 -y
 
 wget github.com/tmferreira-ti/ASOR/raw/refs/heads/main/Confs/srv1/dns/named.conf.options -O /etc/bind/named.conf.options
 
@@ -25,3 +25,7 @@ echo "domain fatecseg.edu.br" > /etc/resolv.conf
 echo "search fatecseg.edu.br"  >> /etc/resolv.conf
 echo "nameserver 172.17.0.1" >> /etc/resolv.conf
 echo "nameserver 172.17.0.2" >> /etc/resolv.conf
+
+chattr +i /etc/resolv.conf
+
+systemctl restart named
