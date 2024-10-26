@@ -6,7 +6,7 @@ $TTL 3600 ; Tempo de vida das respostas fornecidas pelo DNS (cache)
     604800     ; Tempo de expiração do slave caso não contate o master
     7200 )     ; Tempo de vida das respostas negativas do servidor
 
-NS ns1.fatecseg.edu.br.
+	NS ns1.fatecseg.edu.br.
 
 1   PTR ns1.fatecseg.edu.br.
 2   PTR ns2.fatecseg.edu.br.
