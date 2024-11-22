@@ -10,6 +10,18 @@ wget https://github.com/tmferreira-ti/ASOR/raw/refs/heads/main/Confs/srv2/dns/na
 
 apt update
 
-apt install apache2
+apt install apache2 -y
+
+apt install mariadb-server -y 
+
+apt install php php-mysql libapache2-mod-php php-curl php-gd php-mbstring php-mcrypt php-xml php-xmlrpc -y
+
+wget https://github.com/tmferreira-ti/ASOR/raw/refs/heads/main/Confs/srv2/Apache/fatecseg.conf -O /etc/apache2/sites-available/site.conf --no-check-certificate --no-cache
+
+mkdir /dados/paginas/fatecseg -p
+
+a2ensite site.conf
+
+a2dissite 000-default.conf
 
 reboot
