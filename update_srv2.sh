@@ -24,4 +24,21 @@ a2ensite site.conf
 
 a2dissite 000-default.conf
 
+mysql -u root -p -e "CREATE DATABASE wordpress;"
+mysql -u root -p -e "GRANT ALL PRIVILEGES ON wordpress.* TO 'wordpressuser'@'localhost' IDENTIFIED BY 'password';"
+mysql -u root -p -e "FLUSH PRIVILEGES;"
+
+
+cd /dados/paginas/fatecseg/
+
+rm -f index.html
+
+wget wordpress.org/latest.tar.gz
+
+tar --strip-components=1 -xzvf latest.tar.gz
+
+rm -f latest.tar.gz
+
+chown www-data: -R /dados/paginas/fatecseg/
+
 reboot
