@@ -1,0 +1,11 @@
+mkdir -p /etc/apache2/ssl/fatecseg
+
+openssl req -new -x509 -days 365 -nodes -out /etc/apache2/ssl/fatecseg/apache.csr -keyout /etc/apache2/ssl/fatecseg/apache.key
+
+ls /etc/apache2/ssl/fatecseg
+
+wget bit.ly/fatecseg-ssl -O /etc/apache2/sites-available/site.conf
+
+a2enmod ssl
+
+systemctl restart apache2
