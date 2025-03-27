@@ -9,7 +9,7 @@ wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/main/Confs/srv1/nftabl
 #wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/refs/heads/main/Confs/srv1/dhcpd.conf -O /etc/dhcp/dhcpd.conf --no-check-certificate --no-cache
 #wget https://raw.githubusercontent.com/tmferreira-ti/ASOR/refs/heads/main/Confs/srv1/isc-dhcp-server -O /etc/default/isc-dhcp-server --no-check-certificate --no-cache
 
-#systemctl enable nftables
+systemctl enable nftables
 #reboot
 
 #apt install bind9 -y
