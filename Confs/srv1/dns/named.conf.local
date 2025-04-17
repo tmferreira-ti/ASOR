@@ -2,14 +2,14 @@
 zone "fatecseg.edu.br" IN {
     type master;
     file "/etc/bind/domains/fatecseg/db.fatecseg.edu.br";
-    allow-transfer { 172.17.0.2; };  // Permite a transferência de zona para o IP especificado
-    also-notify { 172.17.0.2; };     // Notifica este IP sobre alterações na zona
+//    allow-transfer { 172.17.0.2; };  // Permite a transferência de zona para o IP especificado
+//    also-notify { 172.17.0.2; };     // Notifica este IP sobre alterações na zona
 };
 
 // DNS Reverso
-zone "0.17.172.in-addr.arpa" {
-    type master;
-    file "/etc/bind/domains/fatecseg/db.0.17.172";
-    allow-transfer { 172.17.0.2; };  // Permite a transferência de zona reversa para o IP especificado
-    also-notify { 172.17.0.2; };     // Notifica este IP sobre alterações na zona reversa
-};
+//zone "0.17.172.in-addr.arpa" {
+//    type master;
+//    file "/etc/bind/domains/fatecseg/db.0.17.172";
+//    allow-transfer { 172.17.0.2; };  // Permite a transferência de zona reversa para o IP especificado
+//    also-notify { 172.17.0.2; };     // Notifica este IP sobre alterações na zona reversa
+//};
