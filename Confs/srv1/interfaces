@@ -21,4 +21,4 @@ iface enp0s3 inet dhcp
 
 auto enp0s9
 iface enp0s9 inet static
-	address 192.168.56.102/24
+	address 192.168.56.100/24
