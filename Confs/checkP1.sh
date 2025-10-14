@@ -54,24 +54,24 @@ echo -e "${BOLD}${CYAN}####### Arquivo de Configuração DHCP #######${RESET}"
 cat /etc/dhcp/dhcpd.conf
 read -p "Pressione <Enter> para continuar..."
 
-clear
-echo -e "${BOLD}${CYAN}####### Configuração DNS Master #######${RESET}"
-for sub in www revista blog; do
-  if nslookup "$sub.$DOMAIN.com.br" "$IP.1" > /dev/null; then
-    echo -e "${sub}.${DOMAIN}.com.br: ${GREEN}OK${RESET}"
-  else
-    echo -e "${sub}.${DOMAIN}.com.br: ${RED}Não OK${RESET}"
-  fi
-done
-read -p "Pressione <Enter> para continuar..."
+#clear
+#echo -e "${BOLD}${CYAN}####### Configuração DNS Master #######${RESET}"
+#for sub in www revista blog; do
+#  if nslookup "$sub.$DOMAIN.com.br" "$IP.1" > /dev/null; then
+#    echo -e "${sub}.${DOMAIN}.com.br: ${GREEN}OK${RESET}"
+#  else
+#    echo -e "${sub}.${DOMAIN}.com.br: ${RED}Não OK${RESET}"
+#  fi
+#done
+#read -p "Pressione <Enter> para continuar..."
 
-clear
-echo -e "${BOLD}${CYAN}####### Configuração DNS Slave #######${RESET}"
-for sub in www revista blog; do
-  if nslookup "$sub.$DOMAIN.com.br" "$IP.2" > /dev/null; then
-    echo -e "${sub}.${DOMAIN}.com.br: ${GREEN}OK${RESET}"
-  else
-    echo -e "${sub}.${DOMAIN}.com.br: ${RED}Não OK${RESET}"
-  fi
-done
+#clear
+#echo -e "${BOLD}${CYAN}####### Configuração DNS Slave #######${RESET}"
+#for sub in www revista blog; do
+#  if nslookup "$sub.$DOMAIN.com.br" "$IP.2" > /dev/null; then
+#    echo -e "${sub}.${DOMAIN}.com.br: ${GREEN}OK${RESET}"
+#  else
+#    echo -e "${sub}.${DOMAIN}.com.br: ${RED}Não OK${RESET}"
+#  fi
+#done
 
