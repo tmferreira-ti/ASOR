@@ -3,12 +3,26 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>HOWTO – Configuração de IP e Roteamento no Debian 13</title>
+<meta name="theme-color" content="#06111d">
+<meta name="description" content="Guia prático de configuração de IP, roteamento e NAT no Debian 13, com VirtualBox e nftables.">
+<title>IP e Roteamento no Debian 13 | ASOR</title>
 <link rel="canonical" href="https://asor-network.tmferreira.tec.br/">
 <link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
 </head>
 <body>
-<main>
+<a class="skip-link" href="#guide">Pular para o conteúdo</a>
+<div class="reading-progress" aria-hidden="true"><span id="reading-progress"></span></div>
+<header class="site-header">
+<a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="4" y="5" width="15" height="12" rx="3"/><rect x="29" y="5" width="15" height="12" rx="3"/><rect x="17" y="31" width="15" height="12" rx="3"/><path d="M11 17v7h26v-7M24 24v7"/></svg></span><span><strong>ASOR</strong><small>Administração de Sistemas Operacionais de Redes</small></span></a>
+<div class="header-actions"><button class="icon-button" id="search-button" type="button" aria-label="Pesquisar no guia" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><button class="icon-button" id="theme-button" type="button" aria-label="Ativar tema claro" title="Alternar tema"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></svg></button></div>
+</header>
+<section class="hero" id="inicio" aria-labelledby="hero-title">
+<div class="hero-grid" aria-hidden="true"></div>
+<div class="hero-content"><span class="eyebrow">GUIA PRÁTICO · VIRTUALBOX</span><h1 id="hero-title">IP e roteamento<br><span>no Debian 13</span></h1><p>Configure a rede interna e utilize a VM1 como gateway para conectar a VM2 à internet.</p><div class="hero-actions"><a class="primary-button" href="#cenario-da-atividade">Começar laboratório <span aria-hidden="true">&nbsp;→</span></a></div><dl class="hero-stats"><div><dt>Rede interna</dt><dd>192.168.200.0/24</dd></div><div><dt>Gateway</dt><dd>192.168.200.1</dd></div><div><dt>NAT</dt><dd>nftables</dd></div></dl></div>
+<figure class="network-card topology" aria-label="Topologia: Internet conectada ao NAT VirtualBox, à VM1 e à rede interna com VM2. Cliente previsto para etapa futura."><figcaption><span class="zone-label">TOPOLOGIA DO LABORATÓRIO</span><span class="topology-badge">VIRTUALBOX</span></figcaption><div class="internet-node">◎ &nbsp; Internet</div><div class="network-connector" aria-hidden="true">│</div><div class="nat-node">NAT VirtualBox <small>enp0s3 · DHCP</small></div><div class="network-connector" aria-hidden="true">│</div><div class="network-zone gateway"><span class="zone-label">GATEWAY · DEBIAN 13</span><strong>VM1 — NS1</strong><span>enp0s8 · 192.168.200.1/24</span></div><div class="network-connector" aria-hidden="true">│</div><div class="network-bus">REDE INTERNA <b>192.168.200.0/24</b></div><div class="network-peers"><div class="network-zone"><span class="zone-label">DEBIAN 13</span><strong>VM2 — WEB</strong><span>enp0s3<br>192.168.200.2/24</span></div><div class="network-zone future"><span class="zone-label">ETAPA FUTURA</span><strong>VM3 — CLIENTE</strong><span>enp0s3<br>A configurar</span></div></div></figure>
+</section>
+<div class="page-shell"><aside class="sidebar" id="sidebar" aria-label="Navegação do guia"><div class="sidebar-heading"><span>CONTEÚDO</span><button class="close-sidebar" id="close-sidebar" type="button" aria-label="Fechar sumário">×</button></div><nav id="table-of-contents"></nav></aside><main class="content-column"><button class="mobile-menu" id="mobile-menu" type="button" aria-controls="sidebar" aria-expanded="false">☰ &nbsp; Sumário</button><article class="markdown-body" id="guide">
 <h1 id="howto-configuracao-de-ip-e-roteamento-no-debian-13">HOWTO – Configuração de IP e Roteamento no Debian 13</h1>
 <h2 id="cenario-da-atividade">1. Cenário da atividade</h2>
 <p>Serão utilizadas duas máquinas virtuais:</p>
@@ -532,8 +546,7 @@ iface enp0s3 inet static
 <pre><code class="language-bash">ping -c 4 google.com
 </code></pre>
 <p>Com esses testes é possível comprovar a configuração completa da atividade.</p>
-
-</main>
-</body>
-</html>
-
+</article><footer class="content-footer"><p>ASOR · IP e roteamento no Debian 13</p><a href="#inicio">Voltar ao início ↑</a></footer></main></div>
+<dialog id="search-dialog" aria-labelledby="search-title"><div class="search-input-row"><label id="search-title" class="sr-only" for="search-input">Pesquisar no guia</label><input id="search-input" type="search" placeholder="Pesquisar comandos, interfaces ou endereços…" autocomplete="off"><button id="close-search" type="button" aria-label="Fechar pesquisa">Esc</button></div><div class="search-results" id="search-results"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body></html>
