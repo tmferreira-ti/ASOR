@@ -263,3 +263,12 @@ button, input { font: inherit; }
 @media (max-width: 620px) { .topology { padding: 16px; } .topology figcaption { gap: 8px; } .topology .zone-label { font-size: .6rem; } .network-peers { gap: 10px; } .hero-stats { gap: 18px; } }
 @media print { :root, [data-theme="light"] { --text: #111; --muted: #444; --accent: #075779; --accent-2: #07614e; --line: #ccc; --surface-2: #f4f4f4; } .skip-link, #search-dialog, .code-toolbar { display: none !important; } .markdown-body pre, .code-wrap { background: #f4f4f4; color: #111; } .code-wrap code { color: #111; white-space: pre-wrap; overflow-wrap: anywhere; } .markdown-body h1, .markdown-body h2, .markdown-body h3 { break-after: avoid; } }
 
+
+/* Preserve the supplied topology's full image and intrinsic proportions. */
+.hero { grid-template-columns: minmax(0, 1fr); gap: 44px; }
+.hero-content { width: 100%; max-width: 1100px; margin: auto; }
+.topology-image { width: min(100%, 1100px); padding: 0; }
+.topology-image > a { display: block; }
+.topology-image img { width: 100%; height: auto; aspect-ratio: auto; object-fit: contain; }
+.topology-image figcaption { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 12px 20px; color: var(--muted); font-size: .8rem; }
+@media (max-width: 620px) { .topology-image { border-radius: 12px; } .topology-image figcaption { padding: 10px 12px; } }
