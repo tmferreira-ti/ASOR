@@ -15,7 +15,7 @@
 <div class="reading-progress" aria-hidden="true"><span id="reading-progress"></span></div>
 <header class="site-header">
 <a class="brand" href="#inicio"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="4" y="5" width="15" height="12" rx="3"/><rect x="29" y="5" width="15" height="12" rx="3"/><rect x="17" y="31" width="15" height="12" rx="3"/><path d="M11 17v7h26v-7M24 24v7"/></svg></span><span><strong>ASOR</strong><small>Administração de Sistemas Operacionais de Redes</small></span></a>
-<div class="header-actions"><button class="icon-button" id="search-button" type="button" aria-label="Pesquisar no guia" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><button class="icon-button" id="theme-button" type="button" aria-label="Ativar tema claro" title="Alternar tema"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></svg></button></div>
+<div class="header-actions"><a class="guide-link" href="dhcp/">Guia DHCP</a><button class="icon-button" id="search-button" type="button" aria-label="Pesquisar no guia" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><button class="icon-button" id="theme-button" type="button" aria-label="Ativar tema claro" title="Alternar tema"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></svg></button></div>
 </header>
 <section class="hero" id="inicio" aria-labelledby="hero-title">
 <div class="hero-grid" aria-hidden="true"></div>
@@ -78,8 +78,6 @@
 <pre><code class="language-text">8.8.8.8
 </code></pre>
 <p>O caminho da comunicação será representado pela topologia abaixo:</p>
-
-</code></pre>
 <figure class="network-card topology-image">
 <a href="assets/topologia-debian13.png" target="_blank" rel="noopener" aria-label="Abrir topologia de rede em tamanho original">
 <img src="assets/topologia-debian13.png" alt="Topologia da comunicação: VM2 WEB na rede 192.168.200.0/24 acessa a Internet pela VM1 NS1 e pelo NAT VirtualBox. Cliente previsto para etapa futura." width="1024" height="572" loading="lazy">

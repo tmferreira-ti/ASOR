@@ -1,0 +1,269 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#06111d">
+<meta name="description" content="HOWTO para instalar e configurar o servidor DHCP na VM1 NS1 com Debian 13.">
+<title>Serviço DHCP no Debian 13 | ASOR</title>
+<link rel="canonical" href="https://asor-network.tmferreira.tec.br/dhcp/">
+<link rel="stylesheet" href="../style.css">
+<script src="../app.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#guide">Pular para o conteúdo</a>
+<div class="reading-progress" aria-hidden="true"><span id="reading-progress"></span></div>
+<header class="site-header">
+<a class="brand" href="#inicio" aria-label="Voltar ao início do guia DHCP"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 48 48"><rect x="4" y="5" width="15" height="12" rx="3"/><rect x="29" y="5" width="15" height="12" rx="3"/><rect x="17" y="31" width="15" height="12" rx="3"/><path d="M11 17v7h26v-7M24 24v7"/></svg></span><span><strong>ASOR</strong><small>Administração de Sistemas Operacionais de Redes</small></span></a>
+<div class="header-actions"><a class="guide-link" href="../">IP e roteamento</a><button class="icon-button" id="search-button" type="button" aria-label="Pesquisar no guia" title="Pesquisar (Ctrl+K)"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="7"/><path d="m15 15 6 6"/></svg></button><button class="icon-button" id="theme-button" type="button" aria-label="Ativar tema claro" title="Alternar tema"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/></svg></button></div>
+</header>
+
+<section class="hero" id="inicio" aria-labelledby="hero-title">
+<div class="hero-grid" aria-hidden="true"></div>
+<div class="hero-content">
+<span class="eyebrow">GUIA PRÁTICO · DEBIAN 13</span>
+<h1 id="hero-title">Serviço DHCP<br><span>na VM1 — NS1</span></h1>
+<p>Instale o ISC DHCP Server, distribua endereços automaticamente na rede interna e valide o funcionamento do serviço.</p>
+<div class="hero-actions"><a class="primary-button" href="#cenario-do-laboratorio">Começar laboratório <span aria-hidden="true">&nbsp;→</span></a></div>
+<dl class="hero-stats"><div><dt>Rede</dt><dd>192.168.200.0/24</dd></div><div><dt>Faixa DHCP</dt><dd>.100–.150</dd></div><div><dt>Interface</dt><dd>enp0s8</dd></div></dl>
+</div>
+<figure class="network-card topology-image">
+<a href="../assets/topologia-debian13.png" target="_blank" rel="noopener" aria-label="Abrir topologia de rede em tamanho original"><img src="../assets/topologia-debian13.png" alt="Topologia do laboratório: VM1 NS1 oferece DHCP pela interface enp0s8 à rede interna 192.168.200.0/24." width="1024" height="572" fetchpriority="high"></a>
+<figcaption>Topologia do laboratório <a href="../assets/topologia-debian13.png" target="_blank" rel="noopener">Ampliar imagem ↗</a></figcaption>
+</figure>
+</section>
+
+<div class="page-shell">
+<aside class="sidebar" id="sidebar" aria-label="Navegação do guia"><div class="sidebar-heading"><span>CONTEÚDO</span><button class="close-sidebar" id="close-sidebar" type="button" aria-label="Fechar sumário">×</button></div><nav id="table-of-contents"></nav></aside>
+<main class="content-column">
+<button class="mobile-menu" id="mobile-menu" type="button" aria-controls="sidebar" aria-expanded="false">☰ &nbsp; Sumário</button>
+<article class="markdown-body" id="guide">
+<h1 id="howto-configuracao-do-servico-dhcp">HOWTO — Configuração do Serviço DHCP</h1>
+<p>Este guia configura a <strong>VM1 (NS1)</strong> para fornecer endereços IP automaticamente aos dispositivos conectados à rede interna do VirtualBox.</p>
+<h2 id="cenario-do-laboratorio">1. Cenário do laboratório</h2>
+<table>
+<thead>
+<tr>
+<th>Parâmetro</th>
+<th>Configuração</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Servidor DHCP</td>
+<td>VM1 — NS1</td>
+</tr>
+<tr>
+<td>Interface da rede interna</td>
+<td><code>enp0s8</code></td>
+</tr>
+<tr>
+<td>Rede</td>
+<td><code>192.168.200.0/24</code></td>
+</tr>
+<tr>
+<td>Faixa dinâmica</td>
+<td><code>192.168.200.100</code> até <code>192.168.200.150</code></td>
+</tr>
+<tr>
+<td>Gateway</td>
+<td><code>192.168.200.1</code></td>
+</tr>
+<tr>
+<td>Servidores DNS</td>
+<td><code>192.168.200.1</code> e <code>192.168.200.2</code></td>
+</tr>
+</tbody>
+</table>
+<p>Antes de começar, confirme que a interface <code>enp0s8</code> da VM1 possui o endereço estático <code>192.168.200.1/24</code>.</p>
+<pre><code class="language-bash">ip address show enp0s8
+</code></pre>
+<p>A saída deve mostrar uma linha semelhante a:</p>
+<pre><code class="language-text">inet 192.168.200.1/24
+</code></pre>
+<hr />
+<h1 id="parte-1-instalacao-do-servico">Parte 1 — Instalação do serviço</h1>
+<h2 id="atualizar-a-lista-de-pacotes">2. Atualizar a lista de pacotes</h2>
+<pre><code class="language-bash">apt update
+</code></pre>
+<h2 id="instalar-o-isc-dhcp-server">3. Instalar o ISC DHCP Server</h2>
+<pre><code class="language-bash">apt install isc-dhcp-server -y
+</code></pre>
+<p>Durante a instalação, o serviço pode apresentar falha por ainda não possuir uma configuração válida. Isso será corrigido nas próximas etapas.</p>
+<hr />
+<h1 id="parte-2-configuracao-do-dhcp">Parte 2 — Configuração do DHCP</h1>
+<h2 id="criar-uma-copia-de-seguranca">4. Criar uma cópia de segurança</h2>
+<pre><code class="language-bash">cp /etc/dhcp/dhcpd.conf /etc/dhcp/dhcpd.conf.bkp
+</code></pre>
+<h2 id="editar-o-arquivo-dhcpd.conf">5. Editar o arquivo dhcpd.conf</h2>
+<p>Abra o arquivo principal do serviço:</p>
+<pre><code class="language-bash">vim /etc/dhcp/dhcpd.conf
+</code></pre>
+<p>Pressione <code>i</code> para entrar no modo de inserção. Apague o conteúdo existente e utilize a configuração abaixo:</p>
+<pre><code class="language-text"># Arquivo de configuração do servidor DHCP
+
+# Desabilita as atualizações dinâmicas de DNS
+ddns-update-style none;
+
+# Tempo padrão de concessão: 10 minutos
+default-lease-time 600;
+
+# Tempo máximo de concessão: 2 horas
+max-lease-time 7200;
+
+# Este servidor é autoritativo para a rede interna
+authoritative;
+
+# Rede interna do laboratório
+subnet 192.168.200.0 netmask 255.255.255.0 {
+
+    # Endereços que poderão ser entregues aos clientes
+    range 192.168.200.100 192.168.200.150;
+
+    # Gateway padrão fornecido aos clientes
+    option routers 192.168.200.1;
+
+    # Servidores DNS fornecidos aos clientes
+    option domain-name-servers 192.168.200.1, 192.168.200.2;
+
+    # Endereço de broadcast da rede
+    option broadcast-address 192.168.200.255;
+}
+</code></pre>
+<p>Para salvar e sair do Vim, pressione <code>Esc</code>, digite <code>:wq</code> e pressione <code>Enter</code>.</p>
+<h2 id="entender-os-parametros-principais">6. Entender os parâmetros principais</h2>
+<table>
+<thead>
+<tr>
+<th>Diretiva</th>
+<th>Função</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>subnet</code></td>
+<td>Identifica a rede atendida pelo servidor.</td>
+</tr>
+<tr>
+<td><code>range</code></td>
+<td>Define os endereços disponíveis para concessão dinâmica.</td>
+</tr>
+<tr>
+<td><code>option routers</code></td>
+<td>Informa aos clientes qual é o gateway padrão.</td>
+</tr>
+<tr>
+<td><code>option domain-name-servers</code></td>
+<td>Informa os servidores usados para resolução de nomes.</td>
+</tr>
+<tr>
+<td><code>option broadcast-address</code></td>
+<td>Define o endereço de broadcast da rede.</td>
+</tr>
+<tr>
+<td><code>authoritative</code></td>
+<td>Declara que este é o servidor DHCP oficial da rede.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h1 id="parte-3-interface-atendida-pelo-servico">Parte 3 — Interface atendida pelo serviço</h1>
+<h2 id="configurar-a-interface-enp0s8">7. Configurar a interface enp0s8</h2>
+<p>Abra o arquivo de inicialização do serviço:</p>
+<pre><code class="language-bash">vim /etc/default/isc-dhcp-server
+</code></pre>
+<p>Localize as variáveis de interfaces e deixe-as assim:</p>
+<pre><code class="language-text">INTERFACESv4=&quot;enp0s8&quot;
+INTERFACESv6=&quot;&quot;
+</code></pre>
+<p>Essa configuração impede que o servidor DHCP atenda pela interface <code>enp0s3</code>, ligada ao NAT do VirtualBox, e limita o serviço à rede interna.</p>
+<hr />
+<h1 id="parte-4-validacao-e-inicializacao">Parte 4 — Validação e inicialização</h1>
+<h2 id="verificar-a-sintaxe-da-configuracao">8. Verificar a sintaxe da configuração</h2>
+<p>Antes de reiniciar o serviço, valide o arquivo:</p>
+<pre><code class="language-bash">dhcpd -t -cf /etc/dhcp/dhcpd.conf
+</code></pre>
+<p>Se o comando não exibir erros, a sintaxe está correta. Caso apareça uma mensagem com número de linha, volte ao arquivo e corrija o trecho indicado.</p>
+<h2 id="reiniciar-o-servico-dhcp">9. Reiniciar o serviço DHCP</h2>
+<pre><code class="language-bash">systemctl restart isc-dhcp-server
+</code></pre>
+<p>Quando o comando for executado com sucesso, ele normalmente não apresenta nenhuma saída.</p>
+<h2 id="verificar-o-estado-do-servico">10. Verificar o estado do serviço</h2>
+<pre><code class="language-bash">systemctl status isc-dhcp-server
+</code></pre>
+<p>Procure pela indicação:</p>
+<pre><code class="language-text">Active: active (running)
+</code></pre>
+<p>Pressione <code>q</code> para sair da tela de status.</p>
+<h2 id="habilitar-a-inicializacao-automatica">11. Habilitar a inicialização automática</h2>
+<pre><code class="language-bash">systemctl enable isc-dhcp-server
+</code></pre>
+<hr />
+<h1 id="parte-5-testes-e-diagnostico">Parte 5 — Testes e diagnóstico</h1>
+<h2 id="acompanhar-os-registros-do-servico">12. Acompanhar os registros do serviço</h2>
+<p>Para visualizar as mensagens mais recentes:</p>
+<pre><code class="language-bash">journalctl -u isc-dhcp-server -n 30 --no-pager
+</code></pre>
+<p>Para acompanhar novas solicitações DHCP em tempo real:</p>
+<pre><code class="language-bash">journalctl -u isc-dhcp-server -f
+</code></pre>
+<p>Use <code>Ctrl+C</code> para encerrar o acompanhamento.</p>
+<h2 id="testar-com-a-vm3-cliente">13. Testar com a VM3 — CLIENTE</h2>
+<p>Conecte a interface <code>enp0s3</code> da VM3 à mesma Rede Interna do VirtualBox usada pelas interfaces <code>enp0s8</code> da VM1 e <code>enp0s3</code> da VM2. Configure a interface da cliente para usar DHCP.</p>
+<p>Na cliente, solicite uma concessão:</p>
+<pre><code class="language-bash">dhclient -v enp0s3
+</code></pre>
+<p>Depois, confira o endereço e a rota recebidos:</p>
+<pre><code class="language-bash">ip address show enp0s3
+ip route
+</code></pre>
+<p>O endereço da interface deve estar entre <code>192.168.200.100</code> e <code>192.168.200.150</code>, e a rota padrão deve usar <code>192.168.200.1</code> como gateway.</p>
+<h2 id="verificar-as-concessoes-no-servidor">14. Verificar as concessões no servidor</h2>
+<p>Na VM1, consulte o arquivo de concessões:</p>
+<pre><code class="language-bash">cat /var/lib/dhcp/dhcpd.leases
+</code></pre>
+<p>Também é possível filtrar os eventos DHCP nos registros:</p>
+<pre><code class="language-bash">journalctl -u isc-dhcp-server --no-pager | grep -E &quot;DHCPDISCOVER|DHCPOFFER|DHCPREQUEST|DHCPACK&quot;
+</code></pre>
+<hr />
+<h1 id="parte-6-solucao-de-problemas">Parte 6 — Solução de problemas</h1>
+<h2 id="o-servico-nao-inicia">15. O serviço não inicia</h2>
+<p>Execute novamente a validação e consulte os registros:</p>
+<pre><code class="language-bash">dhcpd -t -cf /etc/dhcp/dhcpd.conf
+journalctl -u isc-dhcp-server -n 50 --no-pager
+</code></pre>
+<p>Confira principalmente pontos e vírgulas, chaves, endereços da rede e o nome da interface.</p>
+<h2 id="a-cliente-nao-recebe-endereco">16. A cliente não recebe endereço</h2>
+<ul>
+<li>Confirme se as máquinas usam a mesma Rede Interna no VirtualBox.</li>
+<li>Verifique se a VM1 mantém <code>192.168.200.1/24</code> em <code>enp0s8</code>.</li>
+<li>Confirme <code>INTERFACESv4=&quot;enp0s8&quot;</code>.</li>
+<li>Verifique se o serviço está como <code>active (running)</code>.</li>
+<li>Certifique-se de que não exista outro servidor DHCP ativo na mesma rede interna.</li>
+</ul>
+<hr />
+<h1 id="parte-7-preparacao-da-entrega">Parte 7 — Preparação da entrega</h1>
+<p>Organize um único arquivo PDF com o nome completo dos integrantes e capturas legíveis dos itens solicitados.</p>
+<h2 id="configuracao-do-dhcp">17. Configuração do DHCP</h2>
+<p>Exiba o conteúdo de <code>/etc/dhcp/dhcpd.conf</code> de maneira que a rede, a faixa, o gateway e os servidores DNS estejam visíveis.</p>
+<pre><code class="language-bash">cat /etc/dhcp/dhcpd.conf
+</code></pre>
+<h2 id="reinicializacao-do-servico">18. Reinicialização do serviço</h2>
+<p>Registre a execução bem-sucedida:</p>
+<pre><code class="language-bash">systemctl restart isc-dhcp-server
+</code></pre>
+<h2 id="servico-ativo">19. Serviço ativo</h2>
+<p>Registre a tela que apresenta <code>Active: active (running)</code>:</p>
+<pre><code class="language-bash">systemctl status isc-dhcp-server
+</code></pre>
+<p>Revise se todas as capturas estão legíveis antes de gerar o PDF final.</p>
+</article>
+<footer class="content-footer"><p>ASOR · Serviço DHCP no Debian 13</p><a href="#inicio">Voltar ao início ↑</a></footer>
+</main>
+</div>
+
+<dialog id="search-dialog" aria-labelledby="search-title"><div class="search-input-row"><label id="search-title" class="sr-only" for="search-input">Pesquisar no guia</label><input id="search-input" type="search" placeholder="Pesquisar DHCP, interfaces ou comandos…" autocomplete="off"><button id="close-search" type="button" aria-label="Fechar pesquisa">Esc</button></div><div class="search-results" id="search-results"></div></dialog>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
+
