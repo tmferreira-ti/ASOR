@@ -266,6 +266,26 @@ button, input { font: inherit; }
 @media (max-width: 620px) { .topology { padding: 16px; } .topology figcaption { gap: 8px; } .topology .zone-label { font-size: .6rem; } .network-peers { gap: 10px; } .hero-stats { gap: 18px; } }
 @media print { :root, [data-theme="light"] { --text: #111; --muted: #444; --accent: #075779; --accent-2: #07614e; --line: #ccc; --surface-2: #f4f4f4; } .skip-link, #search-dialog, .code-toolbar { display: none !important; } .markdown-body pre, .code-wrap { background: #f4f4f4; color: #111; } .code-wrap code { color: #111; white-space: pre-wrap; overflow-wrap: anywhere; } .markdown-body h1, .markdown-body h2, .markdown-body h3 { break-after: avoid; } }
 
+/* Home page for the ASOR guide collection. */
+.guide-home { position: relative; min-height: calc(100vh - var(--header-h)); padding: clamp(64px, 9vw, 120px) clamp(22px, 7vw, 110px); overflow: hidden; background: radial-gradient(circle at 72% 20%, rgba(31,177,224,.14), transparent 31%), linear-gradient(135deg, var(--bg), var(--bg-soft)); }
+.guide-home > *:not(.hero-grid) { position: relative; z-index: 1; }
+.guide-home-intro { max-width: 850px; margin: 0 auto 54px; text-align: center; }
+.guide-home-intro h1 { margin: 16px 0 22px; font-size: clamp(3.2rem, 8vw, 6.8rem); line-height: .92; letter-spacing: -.055em; }
+.guide-home-intro h1 span { color: transparent; -webkit-text-stroke: 1px var(--accent); }
+.guide-home-intro p { max-width: 680px; margin: auto; color: var(--muted); font-size: 1.1rem; }
+.guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; width: min(100%, 1050px); margin: auto; }
+.guide-card { position: relative; min-width: 0; padding: clamp(26px, 4vw, 42px); overflow: hidden; border: 1px solid var(--line-strong); border-radius: 20px; color: var(--text); background: color-mix(in srgb, var(--surface) 88%, transparent); box-shadow: var(--shadow); text-decoration: none; transition: transform .2s ease, border-color .2s ease; }
+.guide-card:hover { transform: translateY(-5px); border-color: var(--accent); }
+.guide-card-number { position: absolute; top: 18px; right: 24px; color: color-mix(in srgb, var(--accent) 18%, transparent); font: 800 4rem/1 ui-monospace, monospace; }
+.guide-card h2 { position: relative; margin: 12px 0; font-size: clamp(1.8rem, 4vw, 2.7rem); letter-spacing: -.035em; }
+.guide-card p { min-height: 3.4em; color: var(--muted); }
+.guide-card dl { display: flex; flex-wrap: wrap; gap: 24px; margin: 28px 0; }
+.guide-card dl div { padding-left: 12px; border-left: 2px solid var(--accent-2); }
+.guide-card dt { color: var(--muted); font-size: .68rem; text-transform: uppercase; letter-spacing: .1em; }
+.guide-card dd { margin: 3px 0 0; font: 700 .86rem ui-monospace, monospace; }
+.guide-card > strong { color: var(--accent); }
+@media (max-width: 760px) { .guide-grid { grid-template-columns: 1fr; } .guide-home { padding-top: 54px; } .guide-home-intro { text-align: left; } .guide-card p { min-height: 0; } }
+
 
 /* Preserve the supplied topology's full image and intrinsic proportions. */
 .hero { grid-template-columns: minmax(0, 1fr); gap: 44px; }
