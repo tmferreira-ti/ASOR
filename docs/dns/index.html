@@ -123,8 +123,81 @@ apt install bind9 bind9-utils dnsutils -y
 </tbody>
 </table>
 <hr />
-<h1 id="parte-2-dns-primario-na-vm1">Parte 2 — DNS primário na VM1</h1>
-<h2 id="criar-o-diretorio-e-o-arquivo-da-zona">4. Criar o diretório e o arquivo da zona</h2>
+<h1 id="parte-2-opcoes-gerais-e-encaminhamento">Parte 2 — Opções gerais e encaminhamento</h1>
+<h2 id="configurar-o-named.conf.options-nas-duas-vms">4. Configurar o named.conf.options nas duas VMs</h2>
+<p>O BIND9 responderá pelo domínio interno <code>fatectech.com.br</code> e encaminhará consultas de outros domínios aos servidores públicos do Google. A recursão e o acesso ao cache ficarão limitados à própria máquina e à rede <code>192.168.200.0/24</code>.</p>
+<p>Primeiro, faça uma cópia de segurança <strong>nas duas VMs</strong>:</p>
+<pre><code class="language-bash">cp /etc/bind/named.conf.options /etc/bind/named.conf.options.bkp
+</code></pre>
+<h3 id="configuracao-da-vm1-ns1">Configuração da VM1 — NS1</h3>
+<p>Na VM1, abra o arquivo:</p>
+<pre><code class="language-bash">vim /etc/bind/named.conf.options
+</code></pre>
+<p>Substitua o conteúdo pelo bloco abaixo:</p>
+<pre><code class="language-text">acl &quot;rede_interna&quot; {
+    127.0.0.1;
+    192.168.200.0/24;
+};
+
+options {
+    directory &quot;/var/cache/bind&quot;;
+
+    forwarders {
+        8.8.8.8;
+        8.8.4.4;
+    };
+    forward only;
+
+    recursion yes;
+    allow-recursion { rede_interna; };
+    allow-query-cache { rede_interna; };
+    allow-query { rede_interna; };
+
+    listen-on { 127.0.0.1; 192.168.200.1; };
+    listen-on-v6 { none; };
+
+    dnssec-validation auto;
+    minimal-responses yes;
+};
+</code></pre>
+<h3 id="configuracao-da-vm2-webns2">Configuração da VM2 — WEB/NS2</h3>
+<p>Na VM2, edite o mesmo arquivo:</p>
+<pre><code class="language-bash">vim /etc/bind/named.conf.options
+</code></pre>
+<p>Utilize a mesma política, alterando somente o endereço em <code>listen-on</code> para o IP da VM2:</p>
+<pre><code class="language-text">acl &quot;rede_interna&quot; {
+    127.0.0.1;
+    192.168.200.0/24;
+};
+
+options {
+    directory &quot;/var/cache/bind&quot;;
+
+    forwarders {
+        8.8.8.8;
+        8.8.4.4;
+    };
+    forward only;
+
+    recursion yes;
+    allow-recursion { rede_interna; };
+    allow-query-cache { rede_interna; };
+    allow-query { rede_interna; };
+
+    listen-on { 127.0.0.1; 192.168.200.2; };
+    listen-on-v6 { none; };
+
+    dnssec-validation auto;
+    minimal-responses yes;
+};
+</code></pre>
+<p><code>forward only</code> determina que nomes externos sejam resolvidos pelos encaminhadores informados. As zonas pelas quais o servidor é autoritativo, como <code>fatectech.com.br</code>, continuam sendo respondidas localmente.</p>
+<blockquote>
+<p>O encaminhamento só funcionará se as VMs tiverem acesso à internet e as consultas UDP/TCP para a porta 53 dos encaminhadores não estiverem bloqueadas.</p>
+</blockquote>
+<hr />
+<h1 id="parte-3-dns-primario-na-vm1">Parte 3 — DNS primário na VM1</h1>
+<h2 id="criar-o-diretorio-e-o-arquivo-da-zona">5. Criar o diretório e o arquivo da zona</h2>
 <p>Na <strong>VM1 (NS1)</strong>, crie o diretório:</p>
 <pre><code class="language-bash">mkdir -p /etc/bind/domains/fatectech
 </code></pre>
@@ -158,7 +231,7 @@ smtp    IN  A       192.168.200.1
 revista IN  CNAME   www.fatectech.com.br.
 </code></pre>
 <p>Os pontos finais em <code>ns1.fatectech.com.br.</code>, <code>ns2.fatectech.com.br.</code>, <code>smtp.fatectech.com.br.</code> e <code>www.fatectech.com.br.</code> indicam nomes completos. Sem o ponto, o BIND acrescentaria o nome da zona novamente.</p>
-<h2 id="entender-os-registros-criados">5. Entender os registros criados</h2>
+<h2 id="entender-os-registros-criados">6. Entender os registros criados</h2>
 <table>
 <thead>
 <tr>
@@ -205,7 +278,7 @@ revista IN  CNAME   www.fatectech.com.br.
 </tr>
 </tbody>
 </table>
-<h2 id="declarar-a-zona-primaria">6. Declarar a zona primária</h2>
+<h2 id="declarar-a-zona-primaria">7. Declarar a zona primária</h2>
 <p>Faça uma cópia de segurança e abra a configuração local:</p>
 <pre><code class="language-bash">cp /etc/bind/named.conf.local /etc/bind/named.conf.local.bkp
 vim /etc/bind/named.conf.local
@@ -219,13 +292,13 @@ vim /etc/bind/named.conf.local
 };
 </code></pre>
 <p><code>allow-transfer</code> restringe a transferência ao endereço da VM2. <code>also-notify</code> avisa a VM2 quando a zona é atualizada.</p>
-<h2 id="ajustar-as-permissoes-do-arquivo">7. Ajustar as permissões do arquivo</h2>
+<h2 id="ajustar-as-permissoes-do-arquivo">8. Ajustar as permissões do arquivo</h2>
 <pre><code class="language-bash">chown root:bind /etc/bind/domains/fatectech/db.fatectech.com.br
 chmod 640 /etc/bind/domains/fatectech/db.fatectech.com.br
 </code></pre>
 <hr />
-<h1 id="parte-3-validar-e-iniciar-o-dns-primario">Parte 3 — Validar e iniciar o DNS primário</h1>
-<h2 id="validar-a-configuracao-da-vm1">8. Validar a configuração da VM1</h2>
+<h1 id="parte-4-validar-e-iniciar-o-dns-primario">Parte 4 — Validar e iniciar o DNS primário</h1>
+<h2 id="validar-a-configuracao-da-vm1">9. Validar a configuração da VM1</h2>
 <p>Verifique todos os arquivos incluídos pelo BIND9:</p>
 <pre><code class="language-bash">named-checkconf
 </code></pre>
@@ -233,7 +306,7 @@ chmod 640 /etc/bind/domains/fatectech/db.fatectech.com.br
 <pre><code class="language-bash">named-checkzone fatectech.com.br /etc/bind/domains/fatectech/db.fatectech.com.br
 </code></pre>
 <p>O resultado esperado termina com <code>OK</code> e informa o mesmo serial definido no arquivo.</p>
-<h2 id="reiniciar-e-verificar-o-servico-na-vm1">9. Reiniciar e verificar o serviço na VM1</h2>
+<h2 id="reiniciar-e-verificar-o-servico-na-vm1">10. Reiniciar e verificar o serviço na VM1</h2>
 <pre><code class="language-bash">systemctl restart named
 systemctl enable named
 systemctl status named --no-pager
@@ -242,7 +315,7 @@ systemctl status named --no-pager
 <pre><code class="language-bash">ss -lntup | grep ':53'
 </code></pre>
 <p>O DNS utiliza <strong>UDP 53</strong> nas consultas usuais e <strong>TCP 53</strong> em operações como a transferência de zona. Caso exista um firewall na VM1, permita os dois protocolos entre as máquinas da rede interna.</p>
-<h2 id="testar-o-servidor-primario">10. Testar o servidor primário</h2>
+<h2 id="testar-o-servidor-primario">11. Testar o servidor primário</h2>
 <pre><code class="language-bash">dig @192.168.200.1 ns1.fatectech.com.br A +noall +answer
 dig @192.168.200.1 www.fatectech.com.br A +noall +answer
 dig @192.168.200.1 fatectech.com.br MX +noall +answer
@@ -251,8 +324,8 @@ dig @192.168.200.1 revista.fatectech.com.br CNAME +noall +answer
 </code></pre>
 <p>As respostas devem reproduzir os registros do arquivo da zona.</p>
 <hr />
-<h1 id="parte-4-dns-secundario-na-vm2">Parte 4 — DNS secundário na VM2</h1>
-<h2 id="declarar-a-zona-secundaria">11. Declarar a zona secundária</h2>
+<h1 id="parte-5-dns-secundario-na-vm2">Parte 5 — DNS secundário na VM2</h1>
+<h2 id="declarar-a-zona-secundaria">12. Declarar a zona secundária</h2>
 <p>Na <strong>VM2 (WEB/NS2)</strong>, faça uma cópia de segurança e abra o arquivo:</p>
 <pre><code class="language-bash">cp /etc/bind/named.conf.local /etc/bind/named.conf.local.bkp
 vim /etc/bind/named.conf.local
@@ -265,7 +338,7 @@ vim /etc/bind/named.conf.local
 };
 </code></pre>
 <p>Não crie nem edite manualmente <code>/var/lib/bind/db.fatectech.com.br</code>. O BIND9 da VM2 criará esse arquivo ao receber a zona da VM1.</p>
-<h2 id="validar-e-iniciar-o-dns-secundario">12. Validar e iniciar o DNS secundário</h2>
+<h2 id="validar-e-iniciar-o-dns-secundario">13. Validar e iniciar o DNS secundário</h2>
 <pre><code class="language-bash">named-checkconf
 systemctl restart named
 systemctl enable named
@@ -274,7 +347,7 @@ systemctl status named --no-pager
 <p>Confirme <code>Active: active (running)</code> e verifique a porta 53:</p>
 <pre><code class="language-bash">ss -lntup | grep ':53'
 </code></pre>
-<h2 id="confirmar-o-recebimento-da-zona">13. Confirmar o recebimento da zona</h2>
+<h2 id="confirmar-o-recebimento-da-zona">14. Confirmar o recebimento da zona</h2>
 <p>Ainda na VM2, verifique se o arquivo foi criado:</p>
 <pre><code class="language-bash">ls -lh /var/lib/bind/db.fatectech.com.br
 </code></pre>
@@ -285,8 +358,44 @@ systemctl status named --no-pager
 <pre><code class="language-bash">journalctl -u named -n 50 --no-pager
 </code></pre>
 <hr />
-<h1 id="parte-5-testes-de-resolucao-e-transferencia">Parte 5 — Testes de resolução e transferência</h1>
-<h2 id="consultar-diretamente-o-servidor-secundario">14. Consultar diretamente o servidor secundário</h2>
+<h1 id="parte-6-usar-os-servidores-dns-configurados">Parte 6 — Usar os servidores DNS configurados</h1>
+<h2 id="configurar-o-resolvedor-das-duas-vms">15. Configurar o resolvedor das duas VMs</h2>
+<p>Depois que o BIND9 estiver ativo nas duas máquinas, configure cada VM para consultar primeiro o próprio servidor DNS e usar a outra VM como alternativa.</p>
+<p>Na <strong>VM1</strong>, abra:</p>
+<pre><code class="language-bash">vim /etc/resolv.conf
+</code></pre>
+<p>Use:</p>
+<pre><code class="language-text">search fatectech.com.br
+nameserver 192.168.200.1
+nameserver 192.168.200.2
+</code></pre>
+<p>Na <strong>VM2</strong>, abra o mesmo arquivo:</p>
+<pre><code class="language-bash">vim /etc/resolv.conf
+</code></pre>
+<p>Use:</p>
+<pre><code class="language-text">search fatectech.com.br
+nameserver 192.168.200.2
+nameserver 192.168.200.1
+</code></pre>
+<p>Essa ordem faz cada máquina consultar seu BIND9 local primeiro e mantém o outro servidor como alternativa. Se <code>/etc/resolv.conf</code> for um link simbólico ou for recriado automaticamente, aplique os mesmos endereços no gerenciador de rede que gera esse arquivo.</p>
+<p>Confira o resultado:</p>
+<pre><code class="language-bash">cat /etc/resolv.conf
+</code></pre>
+<h2 id="testar-a-resolucao-local-e-o-encaminhamento">16. Testar a resolução local e o encaminhamento</h2>
+<p>Execute os testes abaixo <strong>nas duas VMs</strong>. Como <code>/etc/resolv.conf</code> já aponta para os servidores locais, as consultas internas podem ser feitas sem informar <code>@IP</code>:</p>
+<pre><code class="language-bash">dig ns1.fatectech.com.br A +short
+dig ns2.fatectech.com.br A +short
+dig www.fatectech.com.br A +short
+</code></pre>
+<p>Teste também um domínio externo para validar os <code>forwarders</code>:</p>
+<pre><code class="language-bash">dig www.debian.org A +short
+dig @192.168.200.1 www.debian.org A +short
+dig @192.168.200.2 www.debian.org A +short
+</code></pre>
+<p>Os nomes de <code>fatectech.com.br</code> devem ser respondidos pela zona local. As consultas externas feitas diretamente aos dois servidores devem ser encaminhadas para <code>8.8.8.8</code> ou <code>8.8.4.4</code> e retornar um endereço válido.</p>
+<hr />
+<h1 id="parte-7-testes-de-resolucao-e-transferencia">Parte 7 — Testes de resolução e transferência</h1>
+<h2 id="consultar-diretamente-o-servidor-secundario">17. Consultar diretamente o servidor secundário</h2>
 <pre><code class="language-bash">dig @192.168.200.2 ns2.fatectech.com.br A +noall +answer
 dig @192.168.200.2 www.fatectech.com.br A +noall +answer
 dig @192.168.200.2 blog.fatectech.com.br A +noall +answer
@@ -295,32 +404,32 @@ dig @192.168.200.2 fatectech.com.br NS +noall +answer
 dig @192.168.200.2 revista.fatectech.com.br CNAME +noall +answer
 </code></pre>
 <p>Essas consultas devem apresentar os mesmos valores retornados pela VM1.</p>
-<h2 id="comparar-o-serial-nos-dois-servidores">15. Comparar o serial nos dois servidores</h2>
+<h2 id="comparar-o-serial-nos-dois-servidores">18. Comparar o serial nos dois servidores</h2>
 <pre><code class="language-bash">dig @192.168.200.1 fatectech.com.br SOA +short
 dig @192.168.200.2 fatectech.com.br SOA +short
 </code></pre>
 <p>O primeiro número depois do contato <code>hostmaster.fatectech.com.br.</code> é o serial. Os dois servidores devem mostrar o mesmo valor.</p>
-<h2 id="testar-a-transferencia-de-zona">16. Testar a transferência de zona</h2>
+<h2 id="testar-a-transferencia-de-zona">19. Testar a transferência de zona</h2>
 <p>Execute este comando <strong>na VM2</strong>, para que a solicitação saia do endereço autorizado <code>192.168.200.2</code>:</p>
 <pre><code class="language-bash">dig @192.168.200.1 fatectech.com.br AXFR
 </code></pre>
 <p>A resposta deve listar os registros da zona e terminar com o registro SOA. Esse teste comprova que a VM1 permite a transferência para a VM2.</p>
-<h2 id="validar-uma-atualizacao-da-zona">17. Validar uma atualização da zona</h2>
+<h2 id="validar-uma-atualizacao-da-zona">20. Validar uma atualização da zona</h2>
 <p>Na VM1, edite o arquivo de zona, faça a alteração necessária e <strong>aumente o serial</strong>. Por exemplo, depois de <code>2026101701</code>, use <code>2026101702</code>.</p>
 <p>Valide e recarregue a zona:</p>
 <pre><code class="language-bash">named-checkzone fatectech.com.br /etc/bind/domains/fatectech/db.fatectech.com.br
 rndc reload fatectech.com.br
 </code></pre>
-<p>Depois, repita as consultas SOA da etapa 15. A VM2 deve receber o novo serial automaticamente.</p>
+<p>Depois, repita as consultas SOA da etapa 18. A VM2 deve receber o novo serial automaticamente.</p>
 <hr />
-<h1 id="parte-6-solucao-de-problemas">Parte 6 — Solução de problemas</h1>
-<h2 id="o-servico-nao-inicia">18. O serviço não inicia</h2>
+<h1 id="parte-8-solucao-de-problemas">Parte 8 — Solução de problemas</h1>
+<h2 id="o-servico-nao-inicia">21. O serviço não inicia</h2>
 <pre><code class="language-bash">named-checkconf
 systemctl status named --no-pager
 journalctl -u named -n 50 --no-pager
 </code></pre>
 <p>Confira pontos e vírgulas, chaves, aspas, o caminho do arquivo e os pontos finais dos nomes completos.</p>
-<h2 id="a-vm2-nao-recebe-a-zona">19. A VM2 não recebe a zona</h2>
+<h2 id="a-vm2-nao-recebe-a-zona">22. A VM2 não recebe a zona</h2>
 <ul>
 <li>Confirme a comunicação entre <code>192.168.200.1</code> e <code>192.168.200.2</code>.</li>
 <li>Verifique <code>allow-transfer { 192.168.200.2; };</code> na VM1.</li>
@@ -332,16 +441,16 @@ journalctl -u named -n 50 --no-pager
 <pre><code class="language-bash">rndc retransfer fatectech.com.br
 journalctl -u named -n 50 --no-pager
 </code></pre>
-<h2 id="a-consulta-retorna-servfail-ou-refused">20. A consulta retorna SERVFAIL ou REFUSED</h2>
+<h2 id="a-consulta-retorna-servfail-ou-refused">23. A consulta retorna SERVFAIL ou REFUSED</h2>
 <p>Execute a consulta com a seção de comentários visível:</p>
 <pre><code class="language-bash">dig @192.168.200.1 fatectech.com.br SOA
 dig @192.168.200.2 fatectech.com.br SOA
 </code></pre>
 <p>Em <code>status</code>, procure por <code>NOERROR</code>. Se houver erro, valide novamente a configuração e consulte o log do servidor que respondeu.</p>
 <hr />
-<h1 id="parte-7-preparacao-da-entrega">Parte 7 — Preparação da entrega</h1>
+<h1 id="parte-9-preparacao-da-entrega">Parte 9 — Preparação da entrega</h1>
 <p>Organize <strong>um único arquivo PDF</strong> com o nome completo dos integrantes e capturas legíveis. Os registros devem ser criados apenas na VM1 e disponibilizados na VM2 pela transferência de zona.</p>
-<h2 id="arquivos-de-configuracao">21. Arquivos de configuração</h2>
+<h2 id="arquivos-de-configuracao">24. Arquivos de configuração</h2>
 <p>Registre capturas dos seguintes itens:</p>
 <ul>
 <li>Arquivo <code>/etc/bind/domains/fatectech/db.fatectech.com.br</code> na VM1.</li>
@@ -351,13 +460,13 @@ dig @192.168.200.2 fatectech.com.br SOA
 <pre><code class="language-bash">cat /etc/bind/domains/fatectech/db.fatectech.com.br
 cat /etc/bind/named.conf.local
 </code></pre>
-<h2 id="validacoes-e-estado-do-servico">22. Validações e estado do serviço</h2>
+<h2 id="validacoes-e-estado-do-servico">25. Validações e estado do serviço</h2>
 <p>Inclua as saídas de <code>named-checkconf</code>, <code>named-checkzone</code> e o estado ativo do BIND9 nas duas máquinas.</p>
 <pre><code class="language-bash">named-checkconf
 named-checkzone fatectech.com.br /etc/bind/domains/fatectech/db.fatectech.com.br
 systemctl status named --no-pager
 </code></pre>
-<h2 id="consultas-e-transferencia">23. Consultas e transferência</h2>
+<h2 id="consultas-e-transferencia">26. Consultas e transferência</h2>
 <p>Inclua capturas legíveis que demonstrem:</p>
 <ul>
 <li>Consultas <code>A</code>, <code>MX</code>, <code>NS</code> e <code>CNAME</code> ao servidor primário.</li>
@@ -376,5 +485,3 @@ systemctl status named --no-pager
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
-
-
