@@ -273,7 +273,7 @@ button, input { font: inherit; }
 .guide-home-intro h1 { margin: 16px 0 22px; font-size: clamp(3.2rem, 8vw, 6.8rem); line-height: .92; letter-spacing: -.055em; }
 .guide-home-intro h1 span { color: transparent; -webkit-text-stroke: 1px var(--accent); }
 .guide-home-intro p { max-width: 680px; margin: auto; color: var(--muted); font-size: 1.1rem; }
-.guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; width: min(100%, 1050px); margin: auto; }
+.guide-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; width: min(100%, 1280px); margin: auto; }
 .guide-card { position: relative; min-width: 0; padding: clamp(26px, 4vw, 42px); overflow: hidden; border: 1px solid var(--line-strong); border-radius: 20px; color: var(--text); background: color-mix(in srgb, var(--surface) 88%, transparent); box-shadow: var(--shadow); text-decoration: none; transition: transform .2s ease, border-color .2s ease; }
 .guide-card:hover { transform: translateY(-5px); border-color: var(--accent); }
 .guide-card-number { position: absolute; top: 18px; right: 24px; color: color-mix(in srgb, var(--accent) 18%, transparent); font: 800 4rem/1 ui-monospace, monospace; }
@@ -285,6 +285,26 @@ button, input { font: inherit; }
 .guide-card dd { margin: 3px 0 0; font: 700 .86rem ui-monospace, monospace; }
 .guide-card > strong { color: var(--accent); }
 @media (max-width: 760px) { .guide-grid { grid-template-columns: 1fr; } .guide-home { padding-top: 54px; } .guide-home-intro { text-align: left; } .guide-card p { min-height: 0; } }
+
+/* DNS master/slave topology. */
+.dns-topology { width: min(100%, 1100px); padding: clamp(20px, 4vw, 34px); }
+.dns-topology figcaption { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 28px; color: var(--text); font-weight: 750; }
+.dns-machines { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, .8fr) minmax(0, 1fr); align-items: center; gap: clamp(14px, 3vw, 32px); }
+.dns-server { position: relative; display: grid; gap: 7px; min-width: 0; padding: 24px 18px 20px; border: 1px solid var(--line-strong); border-radius: 14px; background: var(--surface-2); text-align: center; }
+.dns-server::before { content: ''; width: 38px; height: 46px; margin: 0 auto 7px; border: 2px solid var(--accent); border-radius: 7px; background: linear-gradient(var(--accent) 0 0) 8px 10px/20px 2px no-repeat, linear-gradient(var(--accent) 0 0) 8px 18px/20px 2px no-repeat, radial-gradient(circle, var(--accent-2) 0 3px, transparent 4px) 24px 33px/8px 8px no-repeat; box-shadow: 0 0 24px color-mix(in srgb, var(--accent) 12%, transparent); }
+.dns-server strong { font-size: clamp(1rem, 2vw, 1.25rem); }
+.dns-server small { color: var(--accent-2); font: 750 .8rem ui-monospace, monospace; }
+.dns-server > span:last-child { color: var(--muted); font-size: .78rem; }
+.dns-role { position: absolute; top: 10px; right: 10px; padding: 4px 6px; border: 1px solid var(--line); border-radius: 5px; color: var(--accent); font: 800 .56rem ui-monospace, monospace; letter-spacing: .08em; }
+.dns-transfer { display: grid; gap: 6px; color: var(--muted); text-align: center; font-size: .72rem; }
+.dns-transfer b { color: var(--accent-2); font: 750 .72rem ui-monospace, monospace; letter-spacing: .08em; }
+.dns-transfer span { padding: 10px 5px; border-top: 1px dashed var(--accent); border-bottom: 1px dashed var(--accent); color: var(--text); }
+.dns-transfer small { font: .66rem ui-monospace, monospace; }
+.dns-query { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 8px 18px; margin-top: 26px; padding: 13px; border: 1px solid var(--line); border-radius: 9px; color: var(--muted); font-size: .75rem; }
+.dns-query b { color: var(--accent); font: 750 .78rem ui-monospace, monospace; }
+.dns-query small { color: var(--accent-2); font: .68rem ui-monospace, monospace; }
+@media (max-width: 1040px) and (min-width: 761px) { .guide-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 700px) { .dns-machines { grid-template-columns: 1fr; } .dns-transfer { margin: 2px 16px; } .dns-transfer b { transform: rotate(90deg); } }
 
 
 /* Preserve the supplied topology's full image and intrinsic proportions. */
